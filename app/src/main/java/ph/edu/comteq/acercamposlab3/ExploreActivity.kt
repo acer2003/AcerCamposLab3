@@ -9,18 +9,21 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.Divider as HorizontalDivider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ph.edu.comteq.acercamposlab3.ui.theme.AcerCamposLab3Theme
 
 class ExploreActivity : ComponentActivity() {
@@ -37,7 +40,7 @@ class ExploreActivity : ComponentActivity() {
 
 @Composable
 fun ExploreScreen() {
-    val context = LocalContext.current   // ✅ Fix: get context for Intent
+    val context = LocalContext.current
 
     Surface(modifier = Modifier.fillMaxSize(), color = Color.Black) {
         Column(
@@ -73,7 +76,9 @@ fun ExploreScreen() {
                     fontSize = 18.sp,
                     modifier = Modifier.weight(1f)
                 )
+
                 Spacer(modifier = Modifier.width(8.dp))
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Tickets",
@@ -81,13 +86,20 @@ fun ExploreScreen() {
                         color = Color.White,
                         fontSize = 16.sp
                     )
-                    Image(
-                        painter = painterResource(id = R.drawable.chevron_right),
-                        contentDescription = "chevron",
+
+                    IconButton(
+                        onClick = {
+                            context.startActivity(Intent(context, TicketingActivity::class.java))
+                        },
                         modifier = Modifier
-                            .size(18.dp)
-                            .padding(start = 6.dp)
-                    )
+                            .size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ConfirmationNumber,
+                            contentDescription = "Open Ticketing",
+                            tint = Color(0xFFD4AF37)
+                        )
+                    }
                 }
             }
 
@@ -179,8 +191,6 @@ fun ExploreScreen() {
 
                     Button(
                         onClick = {
-                            val intent = Intent(context, ExploreActivity::class.java)
-                            context.startActivity(intent)   // ✅ fixed
                         },
                         modifier = Modifier.padding(vertical = 10.dp),
                         colors = ButtonDefaults.buttonColors(
