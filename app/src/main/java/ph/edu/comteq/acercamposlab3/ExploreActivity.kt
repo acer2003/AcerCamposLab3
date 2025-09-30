@@ -1,7 +1,9 @@
 package ph.edu.comteq.acercamposlab3
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -10,8 +12,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material3.Divider as HorizontalDivider
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,14 +57,6 @@ fun ExploreScreen() {
                 fontSize = 28.sp
             )
 
-            HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp),
-                color = Color.Gray,
-                thickness = 1.dp
-            )
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -80,24 +72,31 @@ fun ExploreScreen() {
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "Tickets",
-                        fontFamily = optima,
-                        color = Color.White,
-                        fontSize = 16.sp
-                    )
-
-                    IconButton(
+                    Button(
                         onClick = {
-                            context.startActivity(Intent(context, TicketingActivity::class.java))
+                            try {
+                                val intent = Intent(context, TicketingActivity::class.java)
+                                val activity = (context as? Activity)
+                                if (activity != null) {
+                                    activity.startActivity(intent)
+                                } else {
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    context.startActivity(intent)
+                                }
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Cannot open Tickets: ${e.message}", Toast.LENGTH_LONG).show()
+                            }
                         },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD5A81F)),
+                        shape = RoundedCornerShape(5.dp),
                         modifier = Modifier
-                            .size(40.dp)
+                            .height(45.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.ConfirmationNumber,
-                            contentDescription = "Open Ticketing",
-                            tint = Color(0xFFD4AF37)
+                        Text(
+                            text = "Tickets",
+                            fontFamily = playfairdisplayregular,
+                            color = Color.Black,
+                            fontSize = 18.sp
                         )
                     }
                 }
@@ -191,6 +190,7 @@ fun ExploreScreen() {
 
                     Button(
                         onClick = {
+                            // Keep Visit Gallery logic here if needed
                         },
                         modifier = Modifier.padding(vertical = 10.dp),
                         colors = ButtonDefaults.buttonColors(

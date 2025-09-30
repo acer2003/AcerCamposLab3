@@ -13,7 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.material3.TopAppBarDefaults.centerAlignedTopAppBarColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.LocalActivity   // ✅ ticket-like icon
+import androidx.compose.material.icons.filled.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
