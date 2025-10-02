@@ -9,9 +9,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.material3.Divider as HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,11 +42,14 @@ class ExploreActivity : ComponentActivity() {
 @Composable
 fun ExploreScreen() {
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
 
     Surface(modifier = Modifier.fillMaxSize(), color = Color.Black) {
+        // Make the whole screen vertically scrollable
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .padding(20.dp)
         ) {
             Spacer(modifier = Modifier.height(6.dp))
@@ -69,7 +73,7 @@ fun ExploreScreen() {
                     modifier = Modifier.weight(1f)
                 )
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(10.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Button(
@@ -104,14 +108,14 @@ fun ExploreScreen() {
 
             Spacer(modifier = Modifier.height(14.dp))
 
+            // Removed fixed height so card can expand naturally
             Card(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(360.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF222222))
             ) {
-                Column(modifier = Modifier.fillMaxSize()) {
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Image(
                         painter = painterResource(id = R.drawable.renaissance),
                         contentDescription = "Renaissance",
@@ -135,7 +139,7 @@ fun ExploreScreen() {
                                 text = "10",
                                 fontFamily = playfairdisplayregular,
                                 color = Color(0xFFE8D9B1),
-                                fontSize = 22.sp
+                                fontSize = 30.sp
                             )
                             Text(
                                 text = "OCT",
@@ -188,14 +192,20 @@ fun ExploreScreen() {
 
                     Spacer(modifier = Modifier.height(6.dp))
 
+                    // Visit Gallery button — will now be visible since the parent scrolls and card wraps content
                     Button(
                         onClick = {
-                            // Keep Visit Gallery logic here if needed
+                            Toast.makeText(context, "Visit Gallery clicked", Toast.LENGTH_SHORT).show()
+                            // navigate to gallery activity/screen here if needed
                         },
-                        modifier = Modifier.padding(vertical = 10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp)
+                            .height(56.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0XFFD4AF37)
-                        )
+                            containerColor = Color(0xFFD5A81F)
+                        ),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
                             text = "Visit Gallery",
@@ -206,6 +216,9 @@ fun ExploreScreen() {
                     }
                 }
             }
+
+            // extra bottom space so last item isn't obscured by system nav bars on some devices
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
