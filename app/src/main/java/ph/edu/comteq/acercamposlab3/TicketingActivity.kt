@@ -5,27 +5,24 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.material3.TopAppBarDefaults.centerAlignedTopAppBarColors
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.LocalActivity   // ✅ ticket-like icon
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ph.edu.comteq.acercamposlab3.ui.theme.AcerCamposLab3Theme
+import java.time.Duration
+import java.time.Instant
 
 class TicketingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,135 +30,235 @@ class TicketingActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AcerCamposLab3Theme {
-                TicketingScreen(onBack = { finish() })
+                Scaffold { innerPadding ->
+                    Ticketing(
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
             }
         }
     }
 }
 
-data class TicketOption(val name: String, val desc: String, val price: String)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TicketingScreen(onBack: () -> Unit = {}) {
-    val sampleTickets = remember {
-        listOf(
-            TicketOption("General Admission", "Access to the exhibition (single entry)", "₱250"),
-            TicketOption("Student (ID)", "Discounted ticket — show student ID", "₱150"),
-            TicketOption("VIP", "Priority entry + program booklet", "₱700")
-        )
-    }
-
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Ticketing Service") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = centerAlignedTopAppBarColors()
-            )
+fun Ticketing(modifier: Modifier = Modifier){
+    // Date picker state
+    val datePickersState = rememberDatePickerState(
+        initialSelectedDateMillis = Instant.now()
+            .plus(Duration.ofDays(2)).toEpochMilli(),
+        selectableDates = object: SelectableDates{
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis >= Instant.now()
+                    .plus(Duration.ofDays(1)).toEpochMilli()
+            }
         }
-    ) { innerPadding ->
+    )
+
+    // Ticket counters and prices
+    var generalCount by remember { mutableStateOf(0) }
+    var freeCount by remember { mutableStateOf(1) }
+    val generalPrice = 500
+    val total by remember { derivedStateOf { generalCount * generalPrice } }
+
+    Column(
+        modifier = modifier
+            .background(Color.Black)
+            .fillMaxSize()
+    ){
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            LazyColumn(
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        ){
+            // Header
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
-                    .padding(horizontal = 16.dp)
-            ) {
-                items(sampleTickets) { ticket ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                    .height(230.dp),
+                contentAlignment = Alignment.Center
+            ){
+                Image(
+                    painter = painterResource(id = R.drawable.luffy),
+                    contentDescription = "Luffy",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(230.dp),
+                    contentScale = ContentScale.Crop
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(230.dp)
+                        .background(Color.Black.copy(alpha = 0.7f))
+                )
+                Text(
+                    text = "Official\nTicketing Service",
+                    fontSize = 32.sp,
+                    fontFamily = playfairdisplayregular,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 36.sp
+                )
+            }
+
+            // Inner container
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+            ){
+                // Date Picker
+                DatePicker(
+                    modifier = Modifier
+                        .padding(0.dp)
+                        .fillMaxWidth(),
+                    state = datePickersState,
+                    title = null,
+                    showModeToggle = false,
+                    headline = {
+                        Text(
+                            "1. Date to Visit",
+                            fontSize = 26.sp,
+                            fontFamily = playfairdisplayregular
+                        )
+                    },
+                    colors = DatePickerDefaults.colors(
+                        titleContentColor = Color(0xFFd29f1b),
+                        headlineContentColor = Color(0xFFd29f1b),
+                        weekdayContentColor = Color(0xFFd29f1b),
+                        containerColor = Color.Transparent,
+                        dayContentColor = Color.White,
+                        todayContentColor = Color(0xFFd29f1b),
+                        selectedDayContainerColor = Color(0xFFd29f1b),
+                        selectedDayContentColor = Color.Black,
+                        disabledDayContentColor = Color.Gray,
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Ticket Section
+                Text(
+                    "2. Number of Tickets",
+                    fontSize = 26.sp,
+                    fontFamily = playfairdisplayregular,
+                    color = Color(0xFFd29f1b),
+                    modifier = Modifier.padding(bottom = 10.dp)
+                )
+
+                // General Admission
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("General Admission", color = Color.White, fontSize = 18.sp)
+                        Text("₱$generalPrice", color = Color(0xFFd29f1b), fontSize = 18.sp)
+                    }
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        OutlinedButton(
+                            onClick = { if (generalCount > 0) generalCount-- },
+                            modifier = Modifier.size(44.dp),
+                            contentPadding = PaddingValues(0.dp)
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.renaissance),
-                                contentDescription = "thumb",
-                                modifier = Modifier
-                                    .size(64.dp)
-                                    .clip(RoundedCornerShape(8.dp))
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(ticket.name, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    ticket.desc,
-                                    fontSize = 12.sp,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column(horizontalAlignment = Alignment.End) {
-                                Text(ticket.price, fontWeight = FontWeight.Bold)
-                                Spacer(Modifier.height(8.dp))
-                                OutlinedButton(onClick = { /* UI only */ }, modifier = Modifier.height(36.dp)) {
-                                    Text("Select")
-                                }
-                            }
+                            Text("-", fontSize = 20.sp, color = Color.White)
+                        }
+
+                        Text(
+                            "$generalCount",
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 14.dp)
+                        )
+
+                        OutlinedButton(
+                            onClick = { generalCount++ },
+                            modifier = Modifier.size(44.dp),
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Text("+", fontSize = 20.sp, color = Color.White)
+                        }
+                    }
+                }
+
+                // Free Tickets
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            "Under 18s, Under 26s,\nresidents of the EEA,\nMuseum members,\nProfessionals",
+                            color = Color.White,
+                            fontSize = 14.sp
+                        )
+                        Text("FREE", color = Color(0xFFd29f1b), fontSize = 18.sp)
+                    }
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        OutlinedButton(
+                            onClick = { if (freeCount > 0) freeCount-- },
+                            modifier = Modifier.size(44.dp),
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Text("-", fontSize = 20.sp, color = Color.White)
+                        }
+
+                        Text(
+                            "$freeCount",
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 14.dp)
+                        )
+
+                        OutlinedButton(
+                            onClick = { freeCount++ },
+                            modifier = Modifier.size(44.dp),
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Text("+", fontSize = 20.sp, color = Color.White)
                         }
                     }
                 }
             }
+        }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Surface(
-                    tonalElevation = 2.dp,
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Selected", fontSize = 12.sp)
-                            Text("No tickets selected", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                        }
-                        Text("₱0.00", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Button(
-                    onClick = { /* UI only */ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.LocalActivity,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text("Proceed to Checkout", fontSize = 16.sp)
-                }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(80.dp)
+                .background(Color(0xFFd29f1b))
+                .padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(
+                "Total: ₱$total",
+                fontSize = 26.sp,
+                fontFamily = playfairdisplayregular,
+                color = Color.Black
+            )
+            Button(
+                modifier = Modifier.padding(5.dp),
+                onClick = { /* TODO: checkout logic */ },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black
+                )
+            ){
+                Text(
+                    "Checkout",
+                    fontSize = 20.sp,
+                    fontFamily = playfairdisplayregular,
+                    color = Color(0xFFd29f1b)
+                )
             }
         }
     }
@@ -171,6 +268,8 @@ fun TicketingScreen(onBack: () -> Unit = {}) {
 @Composable
 fun TicketingPreview() {
     AcerCamposLab3Theme {
-        TicketingScreen()
+        Scaffold { innerPadding ->
+            Ticketing(modifier = Modifier.padding(innerPadding))
+        }
     }
 }

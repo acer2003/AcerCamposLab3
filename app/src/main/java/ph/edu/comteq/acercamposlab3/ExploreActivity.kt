@@ -46,7 +46,8 @@ fun ExploreScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp)
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(6.dp))
 
@@ -54,7 +55,8 @@ fun ExploreScreen() {
                 text = "Explore",
                 fontFamily = playfairdisplayregular,
                 color = Color(0xFFE8D9B1),
-                fontSize = 28.sp
+                fontSize = 28.sp,
+                modifier = Modifier.align(Alignment.Start)
             )
 
             HorizontalDivider(
@@ -107,19 +109,21 @@ fun ExploreScreen() {
 
             Card(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(360.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF222222))
             ) {
-                Column(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.renaissance),
                         contentDescription = "Renaissance",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp)
+                            .height(180.dp)
                             .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                     )
 
@@ -187,12 +191,11 @@ fun ExploreScreen() {
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(6.dp))
-
                     Button(
                         onClick = {
+                            context.startActivity(Intent(context, ArtistActivity::class.java))
                         },
-                        modifier = Modifier.padding(vertical = 10.dp),
+                        modifier = Modifier.padding(bottom = 16.dp, top = 8.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0XFFD4AF37)
                         )
@@ -217,3 +220,4 @@ fun ExplorePreview() {
         ExploreScreen()
     }
 }
+

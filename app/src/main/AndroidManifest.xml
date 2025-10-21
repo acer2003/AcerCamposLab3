@@ -11,9 +11,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AcerCamposLab3">
+
+        <!-- Ticketing screen -->
+        <activity
+            android:name=".TicketingActivity"
+            android:exported="true"
+            android:label="Ticketing" />
+
+        <!-- Explore screen -->
         <activity
             android:name=".ExploreActivity"
             android:exported="false" />
+
+        <!-- Artist screen -->
+        <activity
+            android:name=".ArtistActivity"
+            android:exported="false" />
+
+        <!-- Exhibit screen -->
+        <activity
+            android:name=".ExhibitActivity"
+            android:exported="false" />
+
+        <!-- Main/Launcher activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -21,10 +41,10 @@
             android:theme="@style/Theme.AcerCamposLab3">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>
 
 </manifest>
+
