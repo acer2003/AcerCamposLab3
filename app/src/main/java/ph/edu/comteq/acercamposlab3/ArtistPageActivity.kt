@@ -1,10 +1,12 @@
 package ph.edu.comteq.acercamposlab3
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -22,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -44,7 +47,7 @@ class ArtistActivity : ComponentActivity() {
     }
 }
 
-// Data classes to model our data
+// Data classes
 data class Artwork(
     val imageRes: Int,
     val title: String
@@ -64,7 +67,7 @@ val artists = listOf(
         avatarRes = R.drawable.leonardo_da_vinci,
         artworks = listOf(
             Artwork(R.drawable.mona_lisa, "Mona Lisa"),
-            Artwork(R.drawable.lady_ermine, "Lady with an Ermine"),
+            Artwork(R.drawable.lady_ermine, "Lady Ermine"),
             Artwork(R.drawable.litta_madonna, "Litta Madonna")
         )
     ),
@@ -179,6 +182,8 @@ fun ArtistScreen() {
 
 @Composable
 fun ArtistCard(artist: Artist) {
+    val context = LocalContext.current
+
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
@@ -191,7 +196,22 @@ fun ArtistCard(artist: Artist) {
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
-                Text(artist.name, fontFamily = playfairdisplayregular, fontSize = 25.sp, color = Color.Black)
+                Text(
+                    text = artist.name,
+                    fontFamily = playfairdisplayregular,
+                    fontSize = 25.sp,
+                    color = Color.Black,
+                    modifier = Modifier.clickable {
+                        // FIXED: Changed ExploreActivity to ExhibitActivity
+                        val intent = Intent(context, ExhibitActivity::class.java)
+
+                        // Pass artwork titles list
+                        val titles = ArrayList(artist.artworks.map { it.title })
+                        intent.putStringArrayListExtra("artwork_titles", titles)
+
+                        context.startActivity(intent)
+                    }
+                )
                 Text(artist.years, fontFamily = optima, fontSize = 20.sp, color = Color.Gray)
             }
         }
@@ -220,4 +240,3 @@ fun ArtistScreenPreview() {
         ArtistScreen()
     }
 }
-

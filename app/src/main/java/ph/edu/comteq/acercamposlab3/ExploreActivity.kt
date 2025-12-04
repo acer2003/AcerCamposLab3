@@ -4,24 +4,22 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.material3.Divider as HorizontalDivider
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ph.edu.comteq.acercamposlab3.ui.theme.AcerCamposLab3Theme
@@ -29,7 +27,6 @@ import ph.edu.comteq.acercamposlab3.ui.theme.AcerCamposLab3Theme
 class ExploreActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             AcerCamposLab3Theme {
                 ExploreScreen()
@@ -39,185 +36,197 @@ class ExploreActivity : ComponentActivity() {
 }
 
 @Composable
-fun ExploreScreen() {
+fun ExploreScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
-    Surface(modifier = Modifier.fillMaxSize(), color = Color.Black) {
-        Column(
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .padding(horizontal = 16.dp, vertical = 24.dp)
+    ) {
+        // Header
+        Text(
+            text = "Explore",
+            // We use the variables defined in FontFamilies.kt
+            fontFamily = playfairdisplayregular,
+            fontSize = 32.sp,
+            color = Color(0xFFFFD43F),
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
+
+        // Divider
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(Color.Gray)
+        )
+
+        // Upcoming Event row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.height(6.dp))
-
             Text(
-                text = "Explore",
-                fontFamily = playfairdisplayregular,
-                color = Color(0xFFE8D9B1),
-                fontSize = 28.sp,
-                modifier = Modifier.align(Alignment.Start)
+                text = "Upcoming Event",
+                fontFamily = optima,
+                fontSize = 18.sp,
+                color = Color.White,
+                fontWeight = FontWeight.Normal
             )
-
-            HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp),
-                color = Color.Gray,
-                thickness = 1.dp
-            )
-
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable {
+                    val intent = Intent(context, TicketingActivity::class.java)
+                    context.startActivity(intent)
+                }
             ) {
                 Text(
-                    text = "Upcoming Event",
+                    text = "Tickets",
                     fontFamily = optima,
+                    fontSize = 16.sp,
+                    color = Color.White
+                )
+                Text(
+                    text = " ›",
+                    fontSize = 16.sp,
                     color = Color.White,
-                    fontSize = 18.sp,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Event Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+        ) {
+            Column {
+                // Event image
+                Image(
+                    painter = painterResource(id = R.drawable.renaissance),
+                    contentDescription = "Renaissance Exhibition",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                    contentScale = ContentScale.Crop
                 )
 
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "Tickets",
-                        fontFamily = optima,
-                        color = Color.White,
-                        fontSize = 16.sp
-                    )
-
-                    IconButton(
-                        onClick = {
-                            context.startActivity(Intent(context, TicketingActivity::class.java))
-                        },
+                // Event details
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFF333333))
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .size(40.dp)
+                            .width(70.dp)
+                            .padding(end = 8.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.ConfirmationNumber,
-                            contentDescription = "Open Ticketing",
-                            tint = Color(0xFFD4AF37)
+                        Text(
+                            text = "10",
+                            fontFamily = optima,
+                            fontSize = 36.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "OCT",
+                            fontFamily = optima,
+                            fontSize = 16.sp,
+                            color = Color.Gray,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp)
+                    ) {
+                        Text(
+                            text = "Renaissance Exhibition",
+                            fontFamily = playfairdisplayregular,
+                            fontSize = 22.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.padding(bottom = 6.dp)
+                        )
+                        Text(
+                            text = "9:00 AM - 6:00 PM",
+                            fontFamily = optima,
+                            fontSize = 16.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Text(
+                            text = "Indulge in the rich tapestry of Renaissance art",
+                            fontFamily = optima,
+                            fontSize = 16.sp,
+                            color = Color(0xFFFFD43F),
+                            modifier = Modifier.padding(bottom = 12.dp),
+                            lineHeight = 22.sp
+                        )
+                        Text(
+                            text = "+33 (0)1 23 45 67 89",
+                            fontFamily = optima,
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Normal
                         )
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(14.dp))
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF222222))
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.renaissance),
-                        contentDescription = "Renaissance",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(180.dp)
-                            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                // Visit Gallery button
+                Button(
+                    onClick = {
+                        val intent = Intent(context, ArtistActivity::class.java)
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomStart = 16.dp,
+                        bottomEnd = 16.dp
+                    ),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFFD43F)
                     )
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.width(56.dp)
-                        ) {
-                            Text(
-                                text = "10",
-                                fontFamily = playfairdisplayregular,
-                                color = Color(0xFFE8D9B1),
-                                fontSize = 22.sp
-                            )
-                            Text(
-                                text = "OCT",
-                                fontFamily = optima,
-                                color = Color(0xFFBDBDBD),
-                                fontSize = 12.sp
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(12.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Renaissance Exhibition",
-                                fontFamily = playfairdisplayregular,
-                                color = Color.White,
-                                fontSize = 16.sp
-                            )
-
-                            Spacer(modifier = Modifier.height(6.dp))
-
-                            Text(
-                                text = "9:00 AM - 6:00 PM",
-                                fontFamily = optima,
-                                color = Color(0xFFBDBDBD),
-                                fontSize = 12.sp
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = "Indulge in the rich tapestry of Renaissance art",
-                                fontFamily = optima,
-                                color = Color(0xFFEFCC7E),
-                                fontSize = 13.sp,
-                                textDecoration = TextDecoration.Underline
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = "+33 (0)1 23 45 67 89",
-                                fontFamily = optima,
-                                color = Color(0xFFBDBDBD),
-                                fontSize = 12.sp,
-                                textDecoration = TextDecoration.Underline
-                            )
-                        }
-                    }
-
-                    Button(
-                        onClick = {
-                            context.startActivity(Intent(context, ArtistActivity::class.java))
-                        },
-                        modifier = Modifier.padding(bottom = 16.dp, top = 8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0XFFD4AF37)
-                        )
-                    ) {
-                        Text(
-                            text = "Visit Gallery",
-                            fontFamily = playfairdisplayregular,
-                            color = Color.Black,
-                            fontSize = 16.sp
-                        )
-                    }
+                ) {
+                    Text(
+                        text = "Visit Gallery",
+                        fontFamily = optima,
+                        fontSize = 18.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Preview(showBackground = true)
 @Composable
-fun ExplorePreview() {
+fun ExploreScreenPreview() {
     AcerCamposLab3Theme {
         ExploreScreen()
     }
 }
-
